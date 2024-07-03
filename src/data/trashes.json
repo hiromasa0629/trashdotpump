@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Paper cup",
+    "price": 1.29,
+    "change": 15.79,
+    "image": "paper_cup.jpeg"
+  },
+  {
+    "name": "Paper fork",
+    "price": 0.89,
+    "change": 10.79,
+    "image": "paper_fork.jpeg"
+  },
+  {
+    "name": "Paper spoon",
+    "price": 0.95,
+    "change": 5.12,
+    "image": "paper_spoon.jpeg"
+  },
+  {
+    "name": "Paper straw",
+    "price": 0.48,
+    "change": -50.71,
+    "image": "paper_straw.jpeg"
+  },
+  {
+    "name": "Food container",
+    "price": 3.49,
+    "change": -5.51,
+    "image": "food_container.jpeg"
+  }
+]
