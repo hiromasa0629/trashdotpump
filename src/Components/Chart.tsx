@@ -7,9 +7,9 @@ type ChartProps = {
 };
 
 const colors = {
-  backgroundColor: "white",
-  lineColor: "#2962FF",
-  textColor: "black",
+  backgroundColor: "rgb(20, 3, 31)",
+  lineColor: "rgb(230, 230, 250, 0.5)",
+  textColor: "white",
   areaTopColor: "#2962FF",
   areaBottomColor: "rgba(41, 98, 255, 0.28)",
 };
@@ -31,14 +31,15 @@ const Chart = (props: ChartProps) => {
         background: { type: ColorType.Solid, color: colors.backgroundColor },
         textColor: colors.textColor,
       },
+      grid: {
+        vertLines: { color: colors.lineColor },
+        horzLines: { color: colors.lineColor },
+      },
       height: 450,
     });
     chart.timeScale().fitContent();
 
     const newSeries = chart.addCandlestickSeries({
-      // : colors.lineColor,
-      // topColor: colors.areaTopColor,
-      // bottomColor: colors.areaBottomColor,
       upColor: "green",
       downColor: "red",
     });

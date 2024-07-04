@@ -1,5 +1,6 @@
 import {
   Box,
+  Divider,
   Flex,
   Heading,
   Image,
@@ -10,7 +11,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-const TrashTitle = () => {
+interface TrashTitleProps {
+  lpSolBalance: number;
+}
+
+const TrashTitle = (props: TrashTitleProps) => {
+  const { lpSolBalance } = props;
+
   return (
     <Flex gap={1} alignItems={"center"} h={"100%"}>
       <Box h={"100%"}>
@@ -22,15 +29,15 @@ const TrashTitle = () => {
         />
       </Box>
       <Box flex={1}>
-        <VStack alignItems={"start"}>
+        <VStack alignItems={"start"} gap={0}>
           <Box>
-            <Heading>Paper Cup</Heading>
+            <Heading>Paper Cup (PC)</Heading>
           </Box>
-          <Box>
-            <Text as={"span"}>
-              CA: EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm
-            </Text>
-          </Box>
+          <Flex alignItems={"center"}>
+            <Text as={"span"}>Max cap (SOL): 10</Text>
+            <Divider orientation="vertical" color={"indigo5"} h={4} mx={2} />
+            <Text as={"span"}>Raised (SOL): {lpSolBalance}</Text>
+          </Flex>
         </VStack>
       </Box>
       <Box w={"25%"} textAlign={"end"}>

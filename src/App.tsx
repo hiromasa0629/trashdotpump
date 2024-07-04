@@ -24,7 +24,6 @@ function App() {
             area={"header"}
             boxShadow={"var(--chakra-colors-indigo3) 0px 0px 7px"}
             borderRadius={10}
-            // bgColor={"indigo"}
           >
             <Header />
           </GridItem>
@@ -34,7 +33,6 @@ function App() {
             overflowY={"scroll"}
             boxShadow={"var(--chakra-colors-indigo3) 0px 0px 7px"}
             borderRadius={10}
-            // bgColor={"indigo"}
           >
             <TrashList />
           </GridItem>
@@ -43,12 +41,8 @@ function App() {
             area={"main"}
             boxShadow={"var(--chakra-colors-indigo3) 0px 0px 7px"}
             borderRadius={10}
-            // bgColor={"indigo"}
           >
             <VStack gap={3}>
-              <Box h={70} w={"100%"}>
-                <TrashTitle />
-              </Box>
               <Trash />
             </VStack>
           </GridItem>
