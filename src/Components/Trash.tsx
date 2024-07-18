@@ -23,12 +23,14 @@ import {
   getSolBal,
   getTokenBal,
 } from "../lpFunctions/utils";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import TrashTitle from "./TrashTitle";
 import mywallet from "../keypair.json";
 import lpwallet from "../lpkeypair.json";
 import { buyToken, sellToken } from "../lpFunctions/lp";
 import initialData from "../data.json";
+
+import { jupiterV6Swap, getQuote } from "../jupiterV6/jupiterV6";
 
 const Trash = () => {
   const [connection, setConnection] = useState<Connection>();
@@ -36,6 +38,9 @@ const Trash = () => {
   const [lpSolBalance, setLpSolBalance] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [lpTokenBalance, setLpTokenBalance] = useState(0);
+  const [priceImpact, setPriceImpact] = useState(0);
+  const [priceImpactColor, setPriceImpactColor] = useState("rgb(72, 187, 120)");
+  const [routePlan, setRoutePlan] = useState([]);
   const [tokenReceive, setTokenReceive] = useState(0);
   const [solReceive, setSolReceive] = useState(0);
   const [type, setType] = useState<"buy" | "sell">("buy");
@@ -58,29 +63,76 @@ const Trash = () => {
 
   useEffect(() => {
     if (!connection) return;
-    getSolBal(mywallet.publicKey, connection).then((v) =>
+    getSolBal(mywallet.publicKey, connection).then((v) => {
       setSolBalance(v / 1e9)
-    );
+    });
     getTokenBal(mywallet.publicKey, connection).then((v) => {
-      setTokenBalance(v ? v / 1e8 : 0);
+      setTokenBalance(v ? v / 1e6 : 0);
     });
     getSolBal(lpwallet.publicKey, connection).then((v) =>
       setLpSolBalance(v / 1e9)
     );
     getTokenBal(lpwallet.publicKey, connection).then((v) => {
-      console.log(v / 1e8);
-      setLpTokenBalance(v ? v / 1e8 : 0);
+      setLpTokenBalance(v ? v / 1e6 : 0);
     });
   }, [connection]);
 
-  const handleSolChange = (value: string) => {
-    const res = getEstimatedTokenReceive(Number(value), 10);
-    setTokenReceive(res);
+  const setPriceImpactFunction = (value: string) => {
+    let num = Number(value) * 100;
+    console.log(num);
+    if (num > 5 && num < 10) {
+      setPriceImpactColor("orange");
+    } else if (num > 10) {
+      setPriceImpactColor("red");
+    } else {
+      setPriceImpactColor("rgb(72, 187, 120)");
+    }
+    setPriceImpact(num);
   };
 
-  const handleTokenChange = (value: string) => {
-    const res = getEstimatedSolReceive(Number(value), 10);
-    setSolReceive(res);
+  const handleSolChange = async (value: string) => {
+    // const res = getEstimatedTokenReceive(Number(value), 10);
+
+    try {
+      let quote = await getQuote(
+        "So11111111111111111111111111111111111111112",
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        Number(value) * 10 ** 9,
+        500,
+        ""
+      );
+      setTokenReceive(quote.outAmount / 10 ** 6);
+      setPriceImpactFunction(quote.priceImpactPct);
+
+      const labels = quote.routePlan.map((item: any) => item.swapInfo.label);
+      setRoutePlan(labels);
+
+      console.log(quote);
+    } catch (error) {
+      console.error("Error fetching quote:", error);
+    }
+  };
+
+  const handleTokenChange = async (value: string) => {
+    // const res = getEstimatedSolReceive(Number(value), 10);
+
+    try {
+      let quote = await getQuote(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "So11111111111111111111111111111111111111112",
+        Number(value) * 10 ** 6,
+        500,
+        ""
+      );
+      setSolReceive(quote.outAmount / 10 ** 9);
+      setPriceImpactFunction(quote.priceImpactPct);
+
+      const labels = quote.routePlan.map((item: any) => item.swapInfo.label);
+      setRoutePlan(labels);
+      console.log(quote);
+    } catch (error) {
+      console.error("Error fetching quote:", error);
+    }
   };
 
   const handleTypeChange = () => {
@@ -114,14 +166,14 @@ const Trash = () => {
     //   setSolBalance(v / 1e9)
     // );
     // getTokenBal(mywallet.publicKey, connection).then((v) => {
-    //   setTokenBalance(v ? v / 1e8 : 0);
+    //   setTokenBalance(v ? v / 1e6 : 0);
     // });
     getSolBal(lpwallet.publicKey, connection).then((v) =>
       setLpSolBalance(v / 1e9)
     );
     getTokenBal(lpwallet.publicKey, connection).then((v) => {
-      console.log(v / 1e8);
-      setLpTokenBalance(v ? v / 1e8 : 0);
+      console.log(v / 1e6);
+      setLpTokenBalance(v ? v / 1e6 : 0);
     });
     setData((prev) => {
       const last = prev[prev.length - 1];
@@ -155,14 +207,14 @@ const Trash = () => {
     //   setSolBalance(v / 1e9)
     // );
     // getTokenBal(mywallet.publicKey, connection).then((v) => {
-    //   setTokenBalance(v ? v / 1e8 : 0);
+    //   setTokenBalance(v ? v / 1e6 : 0);
     // });
     getSolBal(lpwallet.publicKey, connection).then((v) =>
       setLpSolBalance(v / 1e9)
     );
     getTokenBal(lpwallet.publicKey, connection).then((v) => {
-      console.log(v / 1e8);
-      setLpTokenBalance(v ? v / 1e8 : 0);
+      console.log(v / 1e6);
+      setLpTokenBalance(v ? v / 1e6 : 0);
     });
     setData((prev) => {
       const last = prev[prev.length - 1];
@@ -189,13 +241,44 @@ const Trash = () => {
         duration: null,
         isClosable: true,
       });
-      const txHash = await handleBuy(connection);
-      toast({
-        status: "success",
-        description: `Swapped successfully \n https://solscan.io/tx/${txHash}`,
-        duration: null,
-        isClosable: true,
+      // const txHash = await handleBuy(connection);
+      setIsLoading(true);
+      let tx = await jupiterV6Swap(
+        "So11111111111111111111111111111111111111112",
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        0.0001 * 10 ** 9,
+        500,
+        "",
+        10000,
+        5000
+      );
+      setIsLoading(false);
+
+      getSolBal(lpwallet.publicKey, connection).then((v) =>
+        setLpSolBalance(v / 1e9)
+      );
+      getTokenBal(lpwallet.publicKey, connection).then((v) => {
+        console.log(v / 1e6);
+        setLpTokenBalance(v ? v / 1e6 : 0);
       });
+
+      const txHash = tx;
+
+      if (tx) {
+        toast({
+          status: "success",
+          description: `Swapped successfully \n https://solscan.io/tx/${txHash}`,
+          duration: null,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          status: "warning",
+          description: `Swap failed !`,
+          duration: null,
+          isClosable: true,
+        });
+      }
       // toast.promise(handleBuy(connection), {
       //   success: { title: "Swapped successfully" },
       //   error: { title: "Promise rejected", description: "Something wrong" },
@@ -208,13 +291,44 @@ const Trash = () => {
         duration: null,
         isClosable: true,
       });
-      const txHash = await handleSell(connection);
-      toast({
-        status: "success",
-        description: `Swapped successfully \n https://solscan.io/tx/${txHash}`,
-        duration: null,
-        isClosable: true,
+
+      // const txHash = await handleSell(connection);
+      setIsLoading(true);
+      let tx = await jupiterV6Swap(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "So11111111111111111111111111111111111111112",
+        0.01 * 10 ** 6,
+        500,
+        "",
+        10000,
+        5000
+      );
+      setIsLoading(false);
+
+      getSolBal(lpwallet.publicKey, connection).then((v) =>
+        setLpSolBalance(v / 1e9)
+      );
+      getTokenBal(lpwallet.publicKey, connection).then((v) => {
+        setLpTokenBalance(v ? v / 1e6 : 0);
       });
+
+      const txHash = tx;
+
+      if (tx) {
+        toast({
+          status: "success",
+          description: `Swapped successfully \n https://solscan.io/tx/${txHash}`,
+          duration: null,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          status: "warning",
+          description: `Swap failed !`,
+          duration: null,
+          isClosable: true,
+        });
+      }
       // toast.promise(handleSell(connection), {
       //   success: { title: "Swapped successfully" },
       //   error: { title: "Promise rejected", description: "Something wrong" },
@@ -317,6 +431,24 @@ const Trash = () => {
               Swap
             </Button>
           </Flex>
+          <h2>
+            Price impact:{" "}
+            <span style={{ color: priceImpactColor }}>
+              {priceImpact.toFixed(2)}%
+            </span>
+          </h2>
+          <div>
+            Routes plan: {" "}
+            {routePlan.map((v, index) => (
+              <span key={index}>
+                <span style={{ color: "orange" }}>{v}</span>
+                {index !== routePlan.length - 1 && <span style={{ color: "white" }}> -> </span>}
+              </span>
+            ))}
+          </div>
+          <h2 style={{ color: "red" }}>
+            {priceImpact > 10 ? "HIGH PRICE IMPACT !" : ""}
+          </h2>
         </VStack>
       </VStack>
     </>
