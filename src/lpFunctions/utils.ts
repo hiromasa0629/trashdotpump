@@ -1,7 +1,7 @@
 import { PublicKey, Connection } from "@solana/web3.js";
 
 // const connection = new Connection(
-//   "https://newest-dawn-borough.solana-mainnet.quiknode.pro/70aa5ca62456de58a913bd6510229c9756adbca2/"
+//   ""
 // );
 
 export async function getSolBal(walletAddress: string, connection: Connection) {

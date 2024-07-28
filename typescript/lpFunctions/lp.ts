@@ -16,7 +16,7 @@ import { getEstimatedTokenReceive, getEstimatedSolReceive } from "./utils";
 import * as splToken from "@solana/spl-token";
 
 const connection = new Connection(
-  "https://newest-dawn-borough.solana-mainnet.quiknode.pro/70aa5ca62456de58a913bd6510229c9756adbca2/"
+  ""
 );
 
 const LP_PUB_KEY = new PublicKey(

@@ -8,7 +8,7 @@ import { Buffer } from 'buffer';
 import mywallet from "../keypair.json";
 
 const connection = new Connection(
-  "https://newest-dawn-borough.solana-mainnet.quiknode.pro/70aa5ca62456de58a913bd6510229c9756adbca2/"
+  ""
 );
 const wallet = new Wallet(
   Keypair.fromSecretKey(
@@ -57,7 +57,8 @@ async function getSwapTransaction(
   slippageBps: number,
   dexes: string,
   computeFee: number,
-  jitoTipFee: number
+  prioritizationFee: number,
+  jitoTipFee: number // sadly not enough time to implement jito tipping
 ) {
   const quoteResponse = await getQuote(
     inputMint,
@@ -71,22 +72,29 @@ async function getSwapTransaction(
     return null;
   }
 
+  const body: any = {
+    quoteResponse: quoteResponse,
+    userPublicKey: wallet.publicKey.toString(),
+    wrapAndUnwrapSol: true,
+  };
+  
+  if (prioritizationFee === 0) {
+    body.computeUnitPriceMicroLamports = computeFee || "auto";
+  } else {
+    body.prioritizationFeeLamports = prioritizationFee;
+  }
+
+  // Jito tip integration soon
+
   const response = await fetch("https://quote-api.jup.ag/v6/swap", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      quoteResponse: quoteResponse,
-      userPublicKey: wallet.publicKey.toString(),
-      wrapAndUnwrapSol: true,
-      computeUnitPriceMicroLamports: computeFee || "auto",
-      // prioritizationFeeLamports: {"jitoTipLamports": 100000}
-    }),
+    body: JSON.stringify(body),
   });
 
   const { swapTransaction } = await response.json();
-
   return swapTransaction;
 }
 
@@ -97,6 +105,7 @@ export async function jupiterV6Swap(
   slippageBps: number,
   dexes: string,
   computeFee: number,
+  prioritizationFee: number,
   jitoTipFee: number
 ) {
   try {
@@ -107,6 +116,7 @@ export async function jupiterV6Swap(
       slippageBps,
       dexes,
       computeFee,
+      prioritizationFee,
       jitoTipFee
     );
     if (swapTransaction) {

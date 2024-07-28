@@ -56,7 +56,7 @@ const Trash = () => {
 
   useEffect(() => {
     const conn = new Connection(
-      "https://newest-dawn-borough.solana-mainnet.quiknode.pro/70aa5ca62456de58a913bd6510229c9756adbca2/"
+      ""
     );
     setConnection(conn);
   }, []);
@@ -246,10 +246,11 @@ const Trash = () => {
       let tx = await jupiterV6Swap(
         "So11111111111111111111111111111111111111112",
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-        0.0001 * 10 ** 9,
+        Number(value) * 10 ** 9,
         500,
         "",
         10000,
+        0,
         5000
       );
       setIsLoading(false);
@@ -297,10 +298,11 @@ const Trash = () => {
       let tx = await jupiterV6Swap(
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
         "So11111111111111111111111111111111111111112",
-        0.01 * 10 ** 6,
+        Number(value) * 10 ** 6,
         500,
         "",
         10000,
+        0,
         5000
       );
       setIsLoading(false);
@@ -442,7 +444,7 @@ const Trash = () => {
             {routePlan.map((v, index) => (
               <span key={index}>
                 <span style={{ color: "orange" }}>{v}</span>
-                {index !== routePlan.length - 1 && <span style={{ color: "white" }}> -> </span>}
+                {index !== routePlan.length - 1 && <span style={{ color: "white" }}> {'->'} </span>}
               </span>
             ))}
           </div>
